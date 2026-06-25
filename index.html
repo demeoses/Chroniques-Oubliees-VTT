@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chroniques Oubliées — Table Virtuelle D&D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@4[...]" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  SPLASH SCREEN                             -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="splash-screen">
+    <canvas id="splash-particles"></canvas>
+    <div class="splash-content">
+      <div class="splash-rune">⟁</div>
+      <h1 class="splash-title">Chroniques<br/><span>Oubliées</span></h1>
+      <p class="splash-sub">Table Virtuelle de Jeu de Rôle</p>
+      <div class="splash-divider">
+        <span class="divider-gem">◆</span>
+      </div>
+      <button class="btn-enter" id="btn-enter">
+        <span class="btn-icon">⚔</span>
+        Entrer dans la Taverne
+      </button>
+      <p class="splash-version">Version 2.0 · Audit Complet</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  APP PRINCIPALE                            -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="app" class="hidden">
+
+    <!-- BARRE SUPÉRIEURE -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <div class="campaign-logo">
+          <span class="logo-rune">⟁</span>
+        </div>
+        <div class="campaign-info">
+          <span class="campaign-label">Campagne</span>
+          <h2 class="campaign-name" id="campaign-name">Ma Campagne</h2>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="scene-badge">
+          <span class="scene-icon">🗺</span>
+          <span id="current-scene-label">Aucune scène</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="topbar-btn" id="btn-scene-switcher" title="Changer de scène">
+          <span>⚡</span> Scènes
+        </button>
+        <button class="topbar-btn" id="btn-grid-toggle" title="Afficher/masquer la grille">
+          <span>⊞</span> Grille
+        </button>
+        <button class="topbar-btn" id="btn-tokens-panel" title="Gérer les pions (T)">
+          <span>♟</span> Pions
+        </button>
+        <button class="topbar-btn" id="btn-fog-panel" title="Brouillard de guerre">
+          <span>🌫</span> Brume
+        </button>
+        <button class="topbar-btn" id="btn-settings" title="Paramètres">
+          <span>⚙</span>
+        </button>
+        <div class="session-indicator">
+          <span class="session-dot"></span>
+          <span class="session-text">Solo</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main id="main-content">
+
+      <!-- BARRE GAUCHE — OUTILS -->
+      <aside id="toolbar-left">
+        <div class="toolbar-section">
+          <span class="toolbar-section-label">Outils</span>
+          <button class="tool-btn active" data-tool="select" title="Sélectionner (S)">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 0l16 12-7 1-4 8z"/></svg>
+            <span>Sélect.</span>
+          </button>
+          <button class="tool-btn" data-tool="pan" title="Déplacer la vue (G)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M12 12v0"/><path d="M5 12h14M12 5v14"/></svg>
+            <span>Déplacer</span>
+          </button>
+          <button class="tool-btn" data-tool="measure" title="Mesurer (M)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 12l4-4M2 12l4 4M22 12l-4-4M22 12l-4 4"/></svg>
+            <span>Mesurer</span>
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <span class="toolbar-section-label">Vue</span>
+          <button class="tool-btn" id="btn-zoom-in" title="Zoom + (molette ↑)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+            <span>Zoom +</span>
+          </button>
+          <button class="tool-btn" id="btn-zoom-out" title="Zoom - (molette ↓)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/></svg>
+            <span>Zoom -</span>
+          </button>
+          <button class="tool-btn" id="btn-fit-view" title="Ajuster à l'écran (F)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg>
+            <span>Cadrer</span>
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <span class="toolbar-section-label">Effets</span>
+          <button class="tool-btn" id="btn-fog-toggle" title="Brouillard de guerre">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8s2-1 4 0 4 0 4 0 2-1 4 0 4 0 4 0M3 13s2-1 4 0 4 0 4 0 2-1 4 0 4 0 4 0M3 18s2-1 4 0 4 0 4 0 2-1 4 0 4 0 4 0"/></svg>
+            <span>Brume</span>
+          </button>
+          <button class="tool-btn" id="btn-ambient" title="Sons d'ambiance">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13M9 9l12-2"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span>Ambiance</span>
+          </button>
+        </div>
+
+        <div class="zoom-display">
+          <span id="zoom-label">100%</span>
+        </div>
+      </aside>
+
+      <!-- ZONE DE CARTE -->
+      <div id="map-viewport">
+        <canvas id="grid-canvas"></canvas>
+        <div id="map-container">
+          <img id="map-image" src="" alt="Carte" draggable="false" />
+          <div id="fog-layer"></div>
+          <div id="tokens-layer"></div>
+          <div id="markers-layer"></div>
+        </div>
+
+        <!-- INDICATEUR DE CHARGEMENT -->
+        <div id="map-loading" class="map-loading hidden">
+          <div class="loading-rune">⟁</div>
+          <p>Invocation de la scène…</p>
+        </div>
+
+        <!-- MESSAGE SI PAS DE CARTE -->
+        <div id="map-placeholder">
+          <div class="placeholder-content">
+            <div class="placeholder-rune">◈</div>
+            <h3>Aucune carte chargée</h3>
+            <p>Sélectionnez une scène dans le panneau de droite<br/>ou importez une image de carte.</p>
+            <button class="btn-fantasy" id="btn-import-map">
+              <span>📜</span> Importer une carte
+            </button>
+            <input type="file" id="file-map-import" accept="image/*" style="display:none" />
+          </div>
+        </div>
+
+        <!-- COORDONNÉES -->
+        <div id="coords-display">
+          <span id="coords-text">0, 0</span>
+        </div>
+
+        <!-- MINI-MAP -->
+        <div id="minimap-container">
+          <canvas id="minimap-canvas"></canvas>
+          <div id="minimap-viewport-indicator"></div>
+        </div>
+      </div>
+
+      <!-- PANNEAU DROIT — MJ -->
+      <aside id="panel-right">
+        <div class="panel-header">
+          <span class="panel-icon">⚔</span>
+          <span class="panel-title">Maître du Jeu</span>
+        </div>
+
+        <!-- SCÈNES -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span>🗺</span>
+            <h3>Scènes</h3>
+            <button class="btn-add" title="Importer une scène">+</button>
+          </div>
+          <div id="scenes-list">
+            <!-- Générées par JS -->
+          </div>
+        </div>
+
+        <!-- INFORMATIONS DE PARTIE -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span>📖</span>
+            <h3>Partie</h3>
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Session</span>
+              <span class="info-value" id="info-session">#1</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Pions</span>
+              <span class="info-value" id="info-tokens">0</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tour</span>
+              <span class="info-value" id="info-round">—</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Cartes</span>
+              <span class="info-value" id="info-scenes">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DÉS RAPIDES -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span>🎲</span>
+            <h3>Lancer un dé</h3>
+          </div>
+          <div class="dice-grid">
+            <button class="dice-btn" data-sides="4">d4</button>
+            <button class="dice-btn" data-sides="6">d6</button>
+            <button class="dice-btn" data-sides="8">d8</button>
+            <button class="dice-btn" data-sides="10">d10</button>
+            <button class="dice-btn" data-sides="12">d12</button>
+            <button class="dice-btn dice-btn-20" data-sides="20">d20</button>
+          </div>
+          <div id="dice-result" class="dice-result hidden">
+            <span class="result-label">Résultat</span>
+            <span class="result-value" id="dice-result-value">—</span>
+            <span class="result-type" id="dice-result-type"></span>
+          </div>
+        </div>
+
+        <!-- MULTIJOUEUR (FUTUR) -->
+        <div class="panel-section panel-section-future">
+          <div class="section-header">
+            <span>🌐</span>
+            <h3>Multijoueur</h3>
+            <span class="badge-soon">Phase 3</span>
+          </div>
+          <div class="future-placeholder">
+            <p>Partage de salle, synchronisation temps réel et gestion des joueurs en ligne seront disponibles prochainement.</p>
+            <button class="btn-future" disabled>Créer une salle</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- BARRE D'ACTION INFÉRIEURE -->
+    <footer id="action-bar">
+      <div class="action-left">
+        <div class="action-initiative">
+          <span class="init-label">Initiative</span>
+          <div class="init-track" id="init-track">
+            <span class="init-empty">— Combat non lancé —</span>
+          </div>
+        </div>
+      </div>
+      <div class="action-center">
+        <button class="action-btn" id="btn-roll-initiative" title="Lancer l'initiative">
+          <span>⚔</span>
+          <small>Initiative</small>
+        </button>
+        <button class="action-btn action-btn-danger" id="btn-end-turn" title="Fin de tour">
+          <span>⏭</span>
+          <small>Fin de tour</small>
+        </button>
+        <button class="action-btn" id="btn-next-round" title="Round suivant">
+          <span>🔄</span>
+          <small>Prochain Round</small>
+        </button>
+        <div class="round-counter">
+          Round <strong id="round-number">—</strong>
+        </div>
+      </div>
+      <div class="action-right">
+        <div class="log-preview" id="log-preview">
+          <span class="log-icon">📜</span>
+          <span id="log-last">Bienvenue, Maître du Jeu…</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  MODALES                                   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <!-- Modal Changer de scène -->
+  <div id="modal-scene" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2>⚡ Changer de Scène</h2>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-scenes-grid">
+          <!-- Générées par JS -->
+        </div>
+        <div class="modal-import">
+          <button class="btn-fantasy" id="btn-modal-import">
+            <span>+</span> Importer une carte personnalisée
+          </button>
+          <input type="file" id="file-modal-import" accept="image/*" style="display:none" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Paramètres -->
+  <div id="modal-settings" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2>⚙ Paramètres</h2>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <h3>Campagne</h3>
+          <label class="setting-row">
+            <span>Nom de la campagne</span>
+            <input type="text" id="setting-campaign-name" class="fantasy-input" placeholder="Ma Campagne" />
+          </label>
+          <label class="setting-row">
+            <span>Session actuelle</span>
+            <input type="number" id="setting-session" class="fantasy-input" value="1" min="1" />
+          </label>
+        </div>
+        <div class="settings-group">
+          <h3>Affichage</h3>
+          <label class="setting-row">
+            <span>Grille</span>
+            <input type="checkbox" id="setting-grid" class="fantasy-check" />
+          </label>
+          <label class="setting-row">
+            <span>Taille des cases (px)</span>
+            <input type="number" id="setting-cell-size" class="fantasy-input" value="60" min="20" max="200" />
+          </label>
+          <label class="setting-row">
+            <span>Couleur de grille</span>
+            <input type="color" id="setting-grid-color" value="#c9a84c" />
+          </label>
+          <label class="setting-row">
+            <span>Opacité grille</span>
+            <input type="range" id="setting-grid-opacity" min="0.05" max="0.8" step="0.05" value="0.25" />
+          </label>
+        </div>
+        <div class="settings-group">
+          <h3>Atmosphère</h3>
+          <label class="setting-row">
+            <span>Particules magiques</span>
+            <input type="checkbox" id="setting-particles" class="fantasy-check" checked />
+          </label>
+          <label class="setting-row">
+            <span>Brume de bord</span>
+            <input type="checkbox" id="setting-vignette" class="fantasy-check" checked />
+          </label>
+        </div>
+        <button class="btn-fantasy" id="btn-save-settings">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE 2 : Modal Créer / Éditer un pion ══ -->
+  <div id="modal-token-create" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-panel modal-panel-sm">
+      <div class="modal-header">
+        <h2 id="modal-token-title">♟ Créer un Pion</h2>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="token-edit-id" value="" />
+        <div class="settings-group">
+          <label class="setting-row">
+            <span>Nom</span>
+            <input type="text" id="token-name" class="fantasy-input" placeholder="Gandalf le Gris" />
+          </label>
+          <label class="setting-row">
+            <span>Type</span>
+            <select id="token-type" class="fantasy-input">
+              <option value="joueur">🧙 Joueur</option>
+              <option value="ennemi">💀 Ennemi</option>
+              <option value="pnj">🗣 PNJ</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>PV actuels</span>
+            <input type="number" id="token-hp" class="fantasy-input" value="30" min="0" max="999" />
+          </label>
+          <label class="setting-row">
+            <span>PV max</span>
+            <input type="number" id="token-hp-max" class="fantasy-input" value="30" min="1" max="999" />
+          </label>
+          <label class="setting-row">
+            <span>Taille (cases)</span>
+            <select id="token-size" class="fantasy-input">
+              <option value="1">1×1 — Petite/Moyenne</option>
+              <option value="2">2×2 — Grande</option>
+              <option value="3">3×3 — Très Grande</option>
+              <option value="4">4×4 — Gigantesque</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Couleur de bord</span>
+            <input type="color" id="token-color" value="#c9a84c" />
+          </label>
+          <label class="setting-row">
+            <span>Icône / Emoji</span>
+            <input type="text" id="token-icon" class="fantasy-input" placeholder="🧙 ou laissez vide" maxlength="4" />
+          </label>
+          <label class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+            <span>Image personnalisée</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button class="btn-fantasy" id="btn-token-img-pick" type="button" style="padding:6px 12px;font-size:0.75rem;">📁 Choisir</button>
+              <span id="token-img-name" style="font-size:0.75rem;color:var(--text-muted);font-style:italic;">aucune</span>
+            </div>
+            <input type="file" id="token-img-file" accept="image/*" style="display:none" />
+            <div id="token-img-preview" style="display:none;margin-top:6px;">
+              <img id="token-img-preview-img" src="" alt="preview" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" />
+            </div>
+          </label>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn-fantasy" id="btn-token-save" style="flex:1;">✓ Placer sur la carte</button>
+          <button class="btn-fantasy" id="btn-token-cancel" style="flex:0 0 auto;background:rgba(192,57,43,0.15);border-color:var(--blood);">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE 2 : Modal Panneau des Pions ══ -->
+  <div id="modal-tokens-panel" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-panel modal-panel-sm">
+      <div class="modal-header">
+        <h2>♟ Pions sur la carte</h2>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <button class="btn-fantasy" id="btn-new-token-from-panel" style="flex:1;">+ Créer</button>
+          <input type="text" id="token-search-input" class="fantasy-input" placeholder="Chercher..." style="flex:1;padding:8px 12px;font-size:0.8rem;" />
+        </div>
+        <div id="tokens-list-panel" style="display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto;">
+          <span style="color:var(--text-muted);font-style:italic;font-size:0.8rem;">Aucun pion sur la carte.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE 2 : Modal Brouillard ══ -->
+  <div id="modal-fog" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-panel modal-panel-sm">
+      <div class="modal-header">
+        <h2>🌫 Brouillard de Guerre</h2>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <label class="setting-row">
+            <span>Activer le brouillard</span>
+            <input type="checkbox" id="fog-enabled" class="fantasy-check" />
+          </label>
+          <label class="setting-row">
+            <span>Opacité</span>
+            <input type="range" id="fog-opacity" min="0.3" max="1" step="0.05" value="0.85" />
+          </label>
+          <label class="setting-row">
+            <span>Taille du pinceau (cases)</span>
+            <input type="range" id="fog-brush-size" min="1" max="8" step="1" value="2" />
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn-fantasy fog-tool-btn active" data-fog-tool="reveal" style="flex:1;">👁 Révéler</button>
+          <button class="btn-fantasy fog-tool-btn" data-fog-tool="hide" style="flex:1;background:rgba(30,20,50,0.6);">🌑 Cacher</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn-fantasy" id="btn-fog-reveal-all" style="flex:1;font-size:0.78rem;">☀ Révéler tout</button>
+          <button class="btn-fantasy" id="btn-fog-hide-all" style="flex:1;font-size:0.78rem;background:rgba(30,20,50,0.6);">🌑 Couvrir tout</button>
+        </div>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:10px;font-style:italic;">
+          Activez le brouillard puis peignez sur la carte pour révéler / masquer des zones.<br/>
+          Clic droit ou Échap pour quitter le mode peinture.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
