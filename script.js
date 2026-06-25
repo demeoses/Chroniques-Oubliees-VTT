@@ -7,7 +7,7 @@
 
 'use strict';
 
-// ════════════════════════════════════════════════════════════════��[...] 
+// ════════════════════════════════════════════════════════════════�[...]
 //  ÉTAT GLOBAL
 // ════════════════════════════════════════════════════════════════�[...]
 const State = {
@@ -179,9 +179,9 @@ class InteractionManager {
 
 const Interaction = new InteractionManager();
 
-// ════════════════════════════════════════════════════════════════�[...]
+// ════════════════════════════════════════════════════════════════[...]
 //  CONSTANTES UTILITAIRES
-// ════════════════════════════════════════════════════════════════�[...]
+// ════════════════════════════════════════════════════════════════[...]
 const STORAGE_KEY_MAIN = 'chroniques-vtt-data';
 
 const HEROES = [
@@ -191,9 +191,9 @@ const HEROES = [
   { name: 'Brother Vex', icon: '☩',  class: 'cleric'  },
 ];
 
-// ════════════════════════════════════════════════════════════════�[...]
+// ════════════════════════════════════════════════════════════════[...]
 //  UTILITAIRES
-// ════════════════════════════════════════════════════════════════�[...]
+// ════════════════════════════════════════════════════════════════[...]
 function $(id) { return document.getElementById(id); }
 function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
 
@@ -330,7 +330,7 @@ function setupMapViewport() {
   });
 }
 
-// ═══════════════��════════════════════════════════════════════════[...]
+// ═══════════════��═══════════════════════════════════════════════[...]
 //  RENDER TOKEN (modifié : pointer drag avec seuil, click séparé)
 // ════════════════════════════════════════════════════════════════[...]
 function renderToken(t) {
@@ -718,9 +718,28 @@ function setupFogPainting() {
 })();
 
 // ════════════════════════════════════════════════════════════════[...]
-//  BOOT
+//  BOOT (fix: robust binding for the splash "Entrer" button)
 // ════════════════════════════════════════════════════════════════[...]
+function bindEnterButton() {
+  try {
+    const btn = $('btn-enter');
+    if (!btn) return;
+    if (btn.__enterBound) return;
+    btn.addEventListener('click', enterApp);
+    btn.__enterBound = true;
+  } catch (e) {
+    console.warn('bindEnterButton error', e);
+  }
+}
+
+// DOMContentLoaded behaviour (unchanged behavior: initSplashParticles + bind)
 document.addEventListener('DOMContentLoaded', () => {
   initSplashParticles();
-  $('btn-enter')?.addEventListener('click', enterApp);
+  bindEnterButton();
 });
+
+// immediate attempt in case the script is executed after DOM is ready (script is included at end of body)
+bindEnterButton();
+
+// fallback: try again shortly after in case of race conditions
+setTimeout(bindEnterButton, 500);
